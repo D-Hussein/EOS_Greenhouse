@@ -47,7 +47,7 @@ int configure_pwm(char pin[], char pwmchip[]) {
 		return -1;
 		exit(1);
 	}
-	fprintf(exportfile, "1");
+	fprintf(exportfile, "3");
 	fclose(exportfile);
 
 	char periodpath[100] ="";

@@ -11,9 +11,46 @@
 #include "pwm.h"
 
 
-void heater(){
-	//ToDo
-	printf("This function is not completed yet...\n");
+char heaterpin[] = "49"; //pin 9_23
+
+void heater(char turn[]){
+	export_pwm(heaterpin);
+
+	//Setting direction to output
+	char com[50] = "";
+		strcat(com,"sudo sh -c \"echo out > /sys/class/gpio/gpio");
+		strcat(com,heaterpin);
+		strcat(com,"/direction\"");
+		int status = system(com);
+
+	//Access the value file
+	char path[100] = "";
+			strcat(path,"/sys/class/gpio/gpio");
+			strcat(path,heaterpin);
+			strcat(path,"/value");
+	FILE *valueFile = fopen(path, "w");
+			if (valueFile == NULL) {
+				printf("Value file not found!\n");
+				return;
+				exit(1);
+			}
+
+			if(strcmp(turn,"on")==0){
+				printf("Turning heater on!\n");
+
+				fprintf(valueFile, "1");
+				fclose(valueFile);
+			}else if(strcmp(turn,"off")==0){
+				printf("Turning heater off!\n");
+
+				fprintf(valueFile, "0");
+				fclose(valueFile);
+			}else{
+				printf("please type on or off as the second argument for the heater\n");
+				return;
+				exit(1);
+			}
+
 }
 void pwm_servo(char gpio[], char pin[],char pwmchip[],long percentage){
 	//ToDo
@@ -42,9 +79,11 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+
+
 	char *cmnd = argv[1];
 
-	if(cmnd = "light"){
+	if(strcmp(cmnd,"light")==0){
 		printf("setting light intensity...\n");
 		char *p;
 			long conv = strtol(argv[2], &p, 10);
@@ -55,12 +94,14 @@ int main(int argc, char *argv[]) {
 
 			printf("PWM_Light excuted\n");
 			return 1;
-	}else if(cmnd = "servo"){
+	}else if(strcmp(cmnd,"servo")==0){
 
 		return 1;
 
-	}else if(cmnd = "heater"){
+	}else if(strcmp(cmnd,"heater")==0){
 
+		printf("Turning heater\n");
+		heater(argv[2]);
 		return 1;
 	}
 	else{
