@@ -4,11 +4,14 @@
  *  Created on: Nov 7, 2020
  *      Author: diyar
  */
+
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
 #include "pwm.h"
+//#include "I2CDevice.h"
+#include "honey.h"
 
 
 char heaterpin[] = "49"; //pin 9_23
@@ -102,6 +105,11 @@ int main(int argc, char *argv[]) {
 
 		printf("Turning heater\n");
 		heater(argv[2]);
+		return 1;
+	}else if(strcmp(cmnd,"t_h")==0){
+
+		// ToDo: still need to pass 3ed parameter as a place holder
+		sensor_read();
 		return 1;
 	}
 	else{
