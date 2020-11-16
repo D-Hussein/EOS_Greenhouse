@@ -58,7 +58,7 @@ void wright_hw() { //write to sensor
 	}
 }
 
-int sensor_read() {
+int sensor_read(char th[]) {
 
 	sensors_init();
 	/* Open port (r/w) */
@@ -86,12 +86,19 @@ int sensor_read() {
 		/* Humidity is located in first two bytes */
 		int reading_hum = (buf[0] << 8) + buf[1];
 		double humidity = reading_hum / 16382.0 * 100.0;
-		printf("Humidity: %.2f\n", humidity);
+
 
 		/* Temperature is located in next two bytes, padded by two trailing bits */
 		int reading_temp = (buf[2] << 6) + (buf[3] >> 2);
 		double temperature = reading_temp / 16382.0 * 165.0 - 40;
-		printf("Temperature: %.2f\n", temperature);
+		if(strcmp(th,"temp")==0){
+			printf("%.1f C\n", temperature);
+
+		}else if(strcmp(th,"hum")==0){
+			printf("%.1f %\n", humidity);
+		}
+
+
 	}
 
 	return 0;

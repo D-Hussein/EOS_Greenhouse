@@ -20,11 +20,22 @@ void heater(char turn[]){
 	export_pwm(heaterpin);
 
 	//Setting direction to output
+
+
 	char com[50] = "";
-		strcat(com,"sudo sh -c \"echo out > /sys/class/gpio/gpio");
-		strcat(com,heaterpin);
-		strcat(com,"/direction\"");
-		int status = system(com);
+			strcat(com,"/sys/class/gpio/gpio");
+			strcat(com,heaterpin);
+			strcat(com,"/direction");
+			//int status = system(com);
+			FILE *directionFile = fopen(com , "w");
+
+			if (directionFile == NULL) {
+				printf("Direction file not found!\n");
+				return;
+				exit(1);
+			}
+
+				fprintf(directionFile, "1");
 
 	//Access the value file
 	char path[100] = "";
@@ -109,7 +120,7 @@ int main(int argc, char *argv[]) {
 	}else if(strcmp(cmnd,"t_h")==0){
 
 		// ToDo: still need to pass 3ed parameter as a place holder
-		sensor_read();
+		sensor_read(argv[2]);
 		return 1;
 	}
 	else{

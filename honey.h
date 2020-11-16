@@ -11,7 +11,7 @@
 
 void sensors_init(void);
 void wright_hw();
-int sensor_read();
+int sensor_read(char th[]);
 
 #endif
 
