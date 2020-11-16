@@ -47,10 +47,10 @@ io.on('connection', function (socket) {
 	// On call from Browser for temperature
     socket.on('temp', function getTemp() {
 		const child = execFile('/home/debian/Green',['t_h','temp'],(error, stdout, stderr) => {
-	//	if(error) {
-	//		console.error('stderr', stderr);
-	//		throw error;
-	//	}
+ 	if(error) {
+			console.error('stderr', stderr);
+			throw error;
+		}
 		console.log(stdout);
 		
 		// Create and send JSON object to browser
@@ -65,16 +65,17 @@ io.on('connection', function (socket) {
 	// On call from Browser for humidity
     socket.on('hum', function gethum() {
 		const child = execFile('/home/debian/Green',['t_h','hum'],(error, stdout, stderr) => {
-	//	if(error) {
-	//		console.error('stderr', stderr);
-	//		throw error;
-	//	}
+	if(error) {
+			console.error('stderr', stderr);
+			throw error;
+		}
 		console.log(stdout);
 		
 		// Create and send JSON object to browser
 		var data = {humidity: stdout};
 		var dataJSON = JSON.stringify(data);
 		io.emit('humData', dataJSON);
+		console.log(dataJSON);
 		});
 	});
 	
@@ -152,48 +153,56 @@ io.on('connection', function (socket) {
 		io.emit('lightOffOff', dataJSON);
 		});
 	});
+	socket.on('lightChange', function changeLight(value) {
+		const child = execFile('/home/debian/Green',['light',value],(error, stdout, stderr) => {
+	//	if(error) {
+	//		console.error('stderr', stderr);
+	//		throw error;
+	//	}
+		console.log(stdout);
+		
+		// Create and send JSON object to browser
+		var data = {lightChange: stdout};
+		var dataJSON = JSON.stringify(data);
+		io.emit('lightChanged', dataJSON);
+		});
+	});
+	socket.on('lightsensor', function measureLight() {
+		const child = execFile('/home/debian/Green',['lightMeasure','inten'],(error, stdout, stderr) => {
+		
+		if(error) {
+			console.error('stderr', stderr);
+			throw error;
+		}
+		
+		console.log(stdout);
+		
+		// Create and send JSON object to browser
+		var data = {measureInt: stdout};
+		var dataJSON = JSON.stringify(data);
+		io.emit('measureLightIntens', dataJSON);
+		});
+	});
 	
 	
 	///////
 		
 	 ////Servo ToDo 
-	
-socket.on('servo', function wind() {
+
+	 var b = require('bonescript');
+    var SERVO = 'P9_14';
+socket.on('servo', function wind(value) {
 		
-		//ServoVars
-
-var b = require('bonescript');
-var SERVO = 'P9_14';
-var duty_min = 0.03;
-var position = 0;
-var increment = 0.1;
-
-
-b.pinMode(SERVO, b.OUTPUT);
-// compute and adjust duty_cycle based on
+//	var percentage = value%14;
+ 
+   
+    // compute and adjust duty_cycle based on
     // desired position in range 0..1
-    var duty_cycle = (position*0.115) + duty_min;
-    b.analogWrite(SERVO, duty_cycle, 60,function scheduleNextUpdate() {
-    // adjust position by increment and 
-    // reverse if it exceeds range of 0..1
-    position = position + increment;
-    if(position < 0) {
-        position = 0;
-        increment = -increment;
-    } else if(position > 1) {
-        position = 1;
-        increment = -increment;
-    }
-    
-});
+    var duty_cycle = value *0.0014; //(position*0.115) + duty_min;
+    b.analogWrite(SERVO, duty_cycle, 60);
     console.log("Duty Cycle: " + 
         parseFloat(duty_cycle*100).toFixed(1) + " %");   
-//updateDuty();
-
-
-
-
-	
+      
 	});
 
 	

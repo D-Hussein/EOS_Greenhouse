@@ -28,6 +28,11 @@
       "" + myData.humidity;
   });	
   
+  socket.on('measureLightIntens', function(data) {
+    var myData = JSON.parse(data);
+          document.getElementById("measureInt").innerHTML = 
+      "" + myData.measureInt;
+  });	
 
   // Set update interval
    function update() {
@@ -47,43 +52,35 @@
     
     socket.emit('temp');
     socket.emit('hum');
+    socket.emit('lightsensor');
     
     
      }
      
-     var task =0;
      
-     function runServo(){
-     	socket.emit('servo');
-     }
-     
+
      function turnHeaterOn(){
        
        socket.emit('heatOn');
-       task =0;
-
+       
      }
      
      function turnHeaterOff(){
        
        socket.emit('heatOff');
-       task =0;
+        
 
      }
      
      function turnLigh(value){
-       if(value ===2){
-         turnLightOn();
-       }else if(value ===1){
-         turnLightOff();
-       }else{
-         turnLightOffOff();
-       }
+       socket.emit('lightChange',value);
+      
      }
      
       function turnLightOff(){
        
        socket.emit('lightOff');
+      
      }
      
       function turnLightOn(){
@@ -95,6 +92,35 @@
        socket.emit('lightOffOff');
      }
      
+     function turnHeater(value){
+       console.log(value);
+       if(value.checked){
+         turnHeaterOn();
+       }else{
+         turnHeaterOff();
+       }
+       
+     }
+     
+     function outputUpdate(intens){
+       document.querySelector('#intensity').value = intens;
+     }
+     
+     function outputUpdatewind(val){
+       document.querySelector('#opening').value = val;
+     }
+     
+
+
+
+     
+     function runServo(value){
+     	socket.emit('servo',value);
+   
+
+     }
+     
+
      
 
 
@@ -125,7 +151,7 @@
                   <img src="Img/sun.png">
                 </div>
                 <div  id="ins">
-                  <h2>X%</h2>
+                  <h2 id=measureInt>X</h2>
                 </div>
               </div>
 
@@ -135,7 +161,7 @@
                   <img src="Img/HUm.png">
                 </div>
                 <div  id="ins"style="background-color:#ccc;">
-                  <h2 id="humidity">%</h2>
+                  <h2 id="humidity"></h2>
                 </div>
               </div>
 
@@ -145,7 +171,7 @@
                   <img src="Img/heat.png">
                 </div>
                 <div  id="ins">
-                  <label class="switch"><input type="checkbox" id="togBtn"><div class="slider round"><!--ADDED HTML --><span class="on" onclick="task =1; turnHeaterOn();">ON</span><span class="off" onclick="task =2; turnHeaterOff()">OFF</span><!--END--></div></label>
+                  <label class="switch"><input type="checkbox" id="togBtn" onclick="turnHeater(this);"><div class="slider round"><!--ADDED HTML --><span class="on" >ON</span><span class="off" >OFF</span><!--END--></div></label>
                 </div>
               </div>
               <div class="column">
@@ -154,9 +180,7 @@
                   <img src="Img/light.png">
                 </div>
                 <div  id="ins">       
-                      <label class="switch"><input type="checkbox" id="togBtn1"><div class="slider round"><!--ADDED HTML --><span class="on" onclick="turnLightOn();">ON</span><span class="off" onclick="turnLightOff()">OFF</span><!--END--></div></label>
-
-                  <input type="range" min="0" max="2" id="fader" step="1" oninput="turnLigh(value);">
+                  <input type="range" min="0" max="100" id="fader" step="1" oninput="turnLigh(value); outputUpdate(value)">
                   <p><output for="fader" id="intensity">50</output>%</p>
               </div>
             </div>
@@ -168,8 +192,8 @@
                 <img src="Img/window.png">
               </div>
               <div  id="ins">                 
-                <input type="range" min="0" max="100" id="fader" step="1" oninput="runServo(value)">
-                <p><output for="fader" id="opening">fader</output>%</p>
+                <input type="range" min="0" max="100" id="fader" step="1" oninput="runServo(value); outputUpdatewind(value);">
+                <p><output for="fader" id="opening">50</output>%</p>
             </div>
           </div>
               
