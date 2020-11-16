@@ -71,6 +71,10 @@ void pwm_servo(char gpio[], char pin[],char pwmchip[],long percentage){
 	printf("This function is not completed yet...\n");
 }
 
+void measureLight(){
+	system("cat /sys/bus/iio/devices/iio\:device0/in_voltage0_raw");
+}
+
 
 void pwm_light(char gpio[], char pin[],char pwmchip[],long intensity) {
 
@@ -90,7 +94,7 @@ int main(int argc, char *argv[]) {
 	if (argc != 3) {
 		printf(
 				"Two parameters are required to be passed. \n");
-		return -1;
+		return 0;
 	}
 
 
@@ -107,21 +111,26 @@ int main(int argc, char *argv[]) {
 			pwm_light("3","21","1",conv);
 
 			printf("PWM_Light excuted\n");
-			return 1;
+			return 0;
 	}else if(strcmp(cmnd,"servo")==0){
 
-		return 1;
+		return 0;
 
 	}else if(strcmp(cmnd,"heater")==0){
 
 		printf("Turning heater\n");
 		heater(argv[2]);
-		return 1;
-	}else if(strcmp(cmnd,"t_h")==0){
+		return 0;
+	}else if(strcmp(cmnd,"lightMeasure")==0){
+
+		measureLight(argv[2]);
+		return 0;
+	}
+	else if(strcmp(cmnd,"t_h")==0){
 
 		// ToDo: still need to pass 3ed parameter as a place holder
 		sensor_read(argv[2]);
-		return 1;
+		return 0;
 	}
 	else{
 		printf("Your command is not recognized\n");

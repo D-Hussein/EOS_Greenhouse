@@ -42,7 +42,7 @@ void sensors_init(void) {
 	}
 
 }
-void wright_hw() { //write to sensor
+void wright_hw(void) { //write to sensor
 	const char *buffer;
 	char buf[10] = { 0 };
 	//unsigned char reg = 0x10; // Device register to access
@@ -64,13 +64,13 @@ int sensor_read(char th[]) {
 	/* Open port (r/w) */
 	if ((file = open(filename, O_RDWR)) < 0) {
 		printf("Failed to open i2c port\n");
-		exit(1);
+		return 1;
 	}
 
 	/* Set port options and slave devie address */
 	if (ioctl(file, I2C_SLAVE, address) < 0) {
 		printf("Unable to get bus access to talk to slave\n");
-		exit(1);
+		return 1;
 	}
 
 	wright_hw();
@@ -81,7 +81,7 @@ int sensor_read(char th[]) {
 	/* read back data */
 	if (read(file, buf, 4) < 0) {
 		printf("Unable to read from slave\n");
-		exit(1);
+		return 1;
 	} else {
 		/* Humidity is located in first two bytes */
 		int reading_hum = (buf[0] << 8) + buf[1];
@@ -90,7 +90,7 @@ int sensor_read(char th[]) {
 
 		/* Temperature is located in next two bytes, padded by two trailing bits */
 		int reading_temp = (buf[2] << 6) + (buf[3] >> 2);
-		double temperature = reading_temp / 16382.0 * 165.0 - 40;
+		double temperature = (reading_temp / 16382.0 * 165.0 - 40 );
 		if(strcmp(th,"temp")==0){
 			printf("%.1f C\n", temperature);
 
