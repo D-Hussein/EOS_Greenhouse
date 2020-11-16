@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>GreenHouse Control</title>
+    
+    <link rel="stylesheet" href="styles.css">
+    <link rel="javascripr" href="javascripr.js">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src = "/socket.io/socket.io.js" ></script>
+    <script src = "/Projects/servo.js" ></script>
+    <script>
+      // Establishing connection with server
+      var socket = io.connect(); // global io 
+  var updateInterval;
+
+  // Update when data received on socket
+  socket.on('tempData', function(data) {
+    var myData = JSON.parse(data);
+          document.getElementById("temperature").innerHTML = 
+      "" + myData.temperature;
+  });	
+  
+  
+  socket.on('humData', function(data) {
+    var myData = JSON.parse(data);
+          document.getElementById("humidity").innerHTML = 
+      "" + myData.humidity;
+  });	
+  
+
+  // Set update interval
+   function update() {
+     
+     console.log("Ready ...");
+     //runServo();
+     
+      updateInterval = setInterval(getValues, 10000);
+
+    //updateInterval = setInterval(runServo(1), 5000);
+    
+  }
+
+      // Request sensor data
+      function getValues(){
+    // Emit message to get data
+    
+    socket.emit('temp');
+    socket.emit('hum');
+    
+    
+     }
+     
+     var task =0;
+     
+     function runServo(){
+     	socket.emit('servo');
+     }
+     
+     function turnHeaterOn(){
+       
+       socket.emit('heatOn');
+       task =0;
+
+     }
+     
+     function turnHeaterOff(){
+       
+       socket.emit('heatOff');
+       task =0;
+
+     }
+     
+     function turnLigh(value){
+       if(value ===2){
+         turnLightOn();
+       }else if(value ===1){
+         turnLightOff();
+       }else{
+         turnLightOffOff();
+       }
+     }
+     
+      function turnLightOff(){
+       
+       socket.emit('lightOff');
+     }
+     
+      function turnLightOn(){
+       
+       socket.emit('lightOn');
+     }
+     function turnLightOffOff(){
+       
+       socket.emit('lightOffOff');
+     }
+     
+     
+
+
+  </script> 
+
+</head>
+
+<body onload="update()">
+
+    <div class="container-fluid" id ="top" style="letter-spacing:4px;">
+         <a>GREENHOUSE</a>
+    </div>
+
+        <div class="row">
+          <div class="column">
+            <h2>Temperature</h2>
+            <div  id="ins-img" >
+              <img src="Img/Temp.png">
+            </div>
+            <div  id="ins"style="background-color:#ccc;">
+              <h2 id="temperature">ºC</h2>
+            </div>
+          </div>
+
+            <div class="column">
+                <h2>Light</h2>
+                <div  id="ins-img" >
+                  <img src="Img/sun.png">
+                </div>
+                <div  id="ins">
+                  <h2>X%</h2>
+                </div>
+              </div>
+
+              <div class="column">
+                <h2>Humidity</h2>
+                <div  id="ins-img" >
+                  <img src="Img/HUm.png">
+                </div>
+                <div  id="ins"style="background-color:#ccc;">
+                  <h2 id="humidity">%</h2>
+                </div>
+              </div>
+
+              <div class="column">
+                <h2>Heat</h2>
+                <div id="ins-img" >
+                  <img src="Img/heat.png">
+                </div>
+                <div  id="ins">
+                  <label class="switch"><input type="checkbox" id="togBtn"><div class="slider round"><!--ADDED HTML --><span class="on" onclick="task =1; turnHeaterOn();">ON</span><span class="off" onclick="task =2; turnHeaterOff()">OFF</span><!--END--></div></label>
+                </div>
+              </div>
+              <div class="column">
+                <h2> Artificial Light</h2>
+                <div  id="ins-img" >
+                  <img src="Img/light.png">
+                </div>
+                <div  id="ins">       
+                      <label class="switch"><input type="checkbox" id="togBtn1"><div class="slider round"><!--ADDED HTML --><span class="on" onclick="turnLightOn();">ON</span><span class="off" onclick="turnLightOff()">OFF</span><!--END--></div></label>
+
+                  <input type="range" min="0" max="2" id="fader" step="1" oninput="turnLigh(value);">
+                  <p><output for="fader" id="intensity">50</output>%</p>
+              </div>
+            </div>
+
+            
+            <div class="column">
+              <h2> Window</h2>
+              <div  id="ins-img" >
+                <img src="Img/window.png">
+              </div>
+              <div  id="ins">                 
+                <input type="range" min="0" max="100" id="fader" step="1" oninput="runServo(value)">
+                <p><output for="fader" id="opening">fader</output>%</p>
+            </div>
+          </div>
+              
+      
+      </div>
+      
+</body>
+</html>
