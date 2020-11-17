@@ -35,8 +35,8 @@ void heater(char turn[]){
 				exit(1);
 			}
 
-				fprintf(directionFile, "1");
-
+				fprintf(directionFile, "Out");
+system("cat /sys/class/gpio/gpio49/direction");
 	//Access the value file
 	char path[100] = "";
 			strcat(path,"/sys/class/gpio/gpio");
@@ -52,13 +52,15 @@ void heater(char turn[]){
 			if(strcmp(turn,"on")==0){
 				printf("Turning heater on!\n");
 
-				fprintf(valueFile, "1");
+				fprintf(valueFile,"1");
 				fclose(valueFile);
+				system("cat /sys/class/gpio/gpio49/value");
 			}else if(strcmp(turn,"off")==0){
 				printf("Turning heater off!\n");
 
-				fprintf(valueFile, "0");
+				fprintf(valueFile,"0");
 				fclose(valueFile);
+				system("cat /sys/class/gpio/gpio49/value");
 			}else{
 				printf("please type on or off as the second argument for the heater\n");
 				return;
