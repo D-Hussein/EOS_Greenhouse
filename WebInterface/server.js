@@ -72,7 +72,11 @@ io.on('connection', function (socket) {
 		console.log(stdout);
 		
 		// Create and send JSON object to browser
-		var data = {humidity: stdout};
+		var data1 = {humidity: stdout};
+		var number1 = parseFloat(data1.humidity)%100;
+		var number = number1.toFixed(1);
+		var data = {humidity:number};
+		
 		var dataJSON = JSON.stringify(data);
 		io.emit('humData', dataJSON);
 		console.log(dataJSON);
@@ -187,18 +191,15 @@ io.on('connection', function (socket) {
 	
 	///////
 		
-	 ////Servo ToDo 
+	 ////Servo
 
 	 var b = require('bonescript');
     var SERVO = 'P9_14';
 socket.on('servo', function wind(value) {
 		
-//	var percentage = value%14;
- 
-   
     // compute and adjust duty_cycle based on
     // desired position in range 0..1
-    var duty_cycle = value *0.0014; //(position*0.115) + duty_min;
+    var duty_cycle = value *0.0014;
     b.analogWrite(SERVO, duty_cycle, 60);
     console.log("Duty Cycle: " + 
         parseFloat(duty_cycle*100).toFixed(1) + " %");   

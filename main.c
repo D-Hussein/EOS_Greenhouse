@@ -33,7 +33,9 @@ void heater(char turn[]) {
 	}
 
 	fprintf(directionFile, "out");
+	fclose(directionFile);
 	fprintf(directionFile, "Out"); //Setting the pin to output
+	fclose(directionFile);
 	//Access the value file
 	char path[100] = "";
 	strcat(path, "/sys/class/gpio/gpio");
