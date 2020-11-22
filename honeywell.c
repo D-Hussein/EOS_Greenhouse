@@ -17,16 +17,13 @@
 #include <fcntl.h>
 #include <math.h>
 
-//int fd; /* File descriptor*/
-//const char *fileName = "/dev/i2c-2"; /* Name of the port we will be using. On Raspberry 2 this is i2c-1, on an older Raspberry Pi 1 this might be i2c-0.*/
-
 int address = 0x27; // Address of Honeywell sensor
 unsigned char buf[4]; /* Buffer for data read/written on the i2c bus */
 
 int file; // file descriptor
 char filename[40];
 
-void sensors_init(void) {
+void sensors_init(void) { // Initializing the sensor
 
 	sprintf(filename, "/dev/i2c-2"); //Name of the i2c port
 	if ((file = open(filename, O_RDWR)) < 0) {
@@ -35,7 +32,7 @@ void sensors_init(void) {
 		exit(1);
 	}
 
-	if (ioctl(file, I2C_SLAVE, address) < 0) {
+	if (ioctl(file, I2C_SLAVE, address) < 0) { //Communicating with the slave
 		printf("Failed to acquire bus access and/or talk to slave.\n");
 		// ERROR HANDLING
 		exit(1);
@@ -45,8 +42,6 @@ void sensors_init(void) {
 void wright_hw(void) { //write to sensor
 	const char *buffer;
 	char buf[10] = { 0 };
-	//unsigned char reg = 0x10; // Device register to access
-	//buf[0] = reg;
 	buf[0] = 0b11110000;
 
 	if (write(file, buf, 1) != 1) {
@@ -73,6 +68,7 @@ int sensor_read(char th[]) {
 		return 1;
 	}
 
+	//Writing to the I2C sensor to wake it up
 	wright_hw();
 
 	//* Wait for 100ms for measurement to complete.
